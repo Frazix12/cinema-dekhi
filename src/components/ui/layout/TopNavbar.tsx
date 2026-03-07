@@ -2,10 +2,11 @@
 
 import BackButton from "@/components/ui/button/BackButton";
 import { siteConfig } from "@/config/site";
+import { useSearchModal } from "@/hooks/useSearchModal";
 import { cn } from "@/utils/helpers";
+import { Search } from "@/utils/icons";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
-import { useWindowScroll } from "@mantine/hooks";
-import Link from "next/link";
+import { useHotkeys, useWindowScroll } from "@mantine/hooks";
 import { usePathname } from "next/navigation";
 import FullscreenToggleButton from "../button/FullscreenToggleButton";
 import UserProfileButton from "../button/UserProfileButton";
@@ -22,6 +23,9 @@ const TopNavbar = () => {
   const tv = pathName.includes("/tv/");
   const player = pathName.includes("/player");
   const auth = pathName.includes("/auth");
+  const { open: openSearch } = useSearchModal();
+
+  useHotkeys([["ctrl+K", openSearch, { preventDefault: true }]]);
 
   if (auth || player) return null;
 
@@ -51,15 +55,25 @@ const TopNavbar = () => {
           <BackButton href={tv ? "/?content=tv" : "/"} />
         </NavbarBrand>
       )}
-      {show && !pathName.startsWith("/search") && (
+      {show && (
         <NavbarContent className="hidden w-full max-w-lg gap-2 md:flex" justify="center">
           <NavbarItem className="w-full">
-            <Link href="/search" className="w-full">
+            <button
+              onClick={openSearch}
+              className="w-full cursor-pointer"
+              aria-label="Open Search"
+              type="button"
+            >
               <SearchInput
                 className="pointer-events-none"
-                placeholder="Search movies, shows..."
+                placeholder="Search movies & TV shows..."
+                endContent={
+                  <kbd className="bg-default-100 text-default-500 hidden rounded px-1.5 py-0.5 text-xs md:inline-flex">
+                    CTRL+K
+                  </kbd>
+                }
               />
-            </Link>
+            </button>
           </NavbarItem>
         </NavbarContent>
       )}

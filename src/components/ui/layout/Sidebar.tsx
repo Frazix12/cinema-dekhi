@@ -1,15 +1,18 @@
 "use client";
 
 import { siteConfig } from "@/config/site";
+import { useSearchModal } from "@/hooks/useSearchModal";
+import { cn } from "@/utils/helpers";
+import { Search } from "@/utils/icons";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import BrandLogo from "../other/BrandLogo";
-import { cn } from "@/utils/helpers";
 
 const Sidebar: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathName = usePathname();
   const hrefs = siteConfig.navItems.map((item) => item.href);
   const shouldShowSidebar = hrefs.includes(pathName);
+  const { open: openSearch } = useSearchModal();
 
   return (
     <div className="flex h-full">
@@ -46,11 +49,29 @@ const Sidebar: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     </Link>
                   );
                 })}
+
+                {/* Search trigger */}
+                <button
+                  onClick={openSearch}
+                  type="button"
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
+                    "text-foreground/50 hover:text-foreground hover:bg-white/5 w-full"
+                  )}
+                >
+                  <span className="size-5 shrink-0">
+                    <Search className="size-full" />
+                  </span>
+                  <span>Search</span>
+                  <kbd className="bg-default-100 text-default-400 ml-auto rounded px-1 py-0.5 text-[10px]">
+                    ⌃K
+                  </kbd>
+                </button>
               </nav>
 
               {/* Footer */}
               <div className="p-4 text-center text-xs text-foreground/20">
-                © 2025 Cinema Dekhi
+                © 2026 Cinema Dekhi
               </div>
             </div>
           </aside>

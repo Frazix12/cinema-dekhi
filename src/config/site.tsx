@@ -1,6 +1,5 @@
 import { tmdb } from "@/api/tmdb";
 import { SiteConfigType } from "@/types";
-import { BiSearchAlt2, BiSolidSearchAlt2 } from "react-icons/bi";
 import { GoHomeFill, GoHome } from "react-icons/go";
 import { HiComputerDesktop } from "react-icons/hi2";
 import { IoIosSunny } from "react-icons/io";
@@ -29,12 +28,6 @@ export const siteConfig: SiteConfigType = {
       href: "/discover",
       icon: <IoCompassOutline className="size-full" />,
       activeIcon: <IoCompass className="size-full" />,
-    },
-    {
-      label: "Search",
-      href: "/search",
-      icon: <BiSearchAlt2 className="size-full" />,
-      activeIcon: <BiSolidSearchAlt2 className="size-full" />,
     },
     {
       label: "Library",

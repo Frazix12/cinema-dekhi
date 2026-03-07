@@ -1,12 +1,8 @@
 "use client";
 
-import { useRef } from "react";
-import { FaSearch } from "react-icons/fa";
-import { Input, InputProps, Kbd, Spinner } from "@heroui/react";
 import { cn } from "@/utils/helpers";
-import { useHotkeys } from "@mantine/hooks";
-import { useRouter } from "@bprogress/next";
-import { usePathname } from "next/navigation";
+import { Input, InputProps, Kbd, Spinner } from "@heroui/react";
+import { FaSearch } from "react-icons/fa";
 
 interface SearchInputProps extends InputProps {
   isLoading?: boolean;
@@ -19,26 +15,8 @@ const SearchInput: React.FC<SearchInputProps> = ({
   placeholder = "Search...",
   ...props
 }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
-  const pathName = usePathname();
-
-  useHotkeys([
-    [
-      "ctrl+K",
-      () => {
-        if (pathName !== "/search") {
-          return router.push("/search");
-        }
-        inputRef.current?.focus();
-      },
-      { preventDefault: true },
-    ],
-  ]);
-
   return (
     <Input
-      ref={inputRef}
       autoComplete="off"
       className={cn(className, "w-full")}
       placeholder={placeholder}

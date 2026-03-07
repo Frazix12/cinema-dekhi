@@ -7,6 +7,7 @@ import Providers from "./providers";
 import TopNavbar from "@/components/ui/layout/TopNavbar";
 import BottomNavbar from "@/components/ui/layout/BottomNavbar";
 import Sidebar from "@/components/ui/layout/Sidebar";
+import FloatingSearch from "@/components/ui/overlay/FloatingSearch";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import { cn } from "@/utils/helpers";
@@ -66,6 +67,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 </main>
               </Sidebar>
               <BottomNavbar />
+              <FloatingSearch />
             </Providers>
           </NuqsAdapter>
         </Suspense>

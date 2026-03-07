@@ -18,7 +18,7 @@ export async function GET(request: NextRequest, context: Context) {
     const episode = Number(searchParams.get("episode"));
     const startAt = Number(searchParams.get("startAt")) || undefined;
 
-    if (!season || !episode) {
+    if (isNaN(season) || isNaN(episode)) {
       return errorResponse("Missing required query params: season and episode", 400);
     }
 
