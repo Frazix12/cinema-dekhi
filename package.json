@@ -1,5 +1,5 @@
 {
-  "name": "cinextma",
+  "name": "cinema-dekhi",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -60,7 +60,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^4.1.12",
-    "typescript": "^5",
+    "typescript": "5.9.3",
     "webpack": "^5.101.2"
   },
   "prettier": {

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { siteConfig } from "@/config/site";
-import { Poppins } from "@/utils/fonts";
+import { Poppins, Playfair } from "@/utils/fonts";
 import "../styles/globals.css";
 import "../styles/lightbox.css";
 import Providers from "./providers";
@@ -14,7 +14,6 @@ import { IS_PRODUCTION, SpacingClasses } from "@/utils/constants";
 import dynamic from "next/dynamic";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Suspense } from "react";
-const Disclaimer = dynamic(() => import("@/components/ui/overlay/Disclaimer"));
 
 export const metadata: Metadata = {
   title: siteConfig.name,
@@ -48,19 +47,18 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
-    { media: "(prefers-color-scheme: dark)", color: "#0D0C0F" },
+    { media: "(prefers-color-scheme: light)", color: "#f2f6ee" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0f08" },
   ],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html suppressHydrationWarning lang="en">
-      <body className={cn("bg-background min-h-dvh antialiased select-none", Poppins.className)}>
+      <body className={cn("bg-background min-h-dvh antialiased select-none", Poppins.className, Playfair.variable)}>
         <Suspense>
           <NuqsAdapter>
             <Providers>
-              {IS_PRODUCTION && <Disclaimer />}
               <TopNavbar />
               <Sidebar>
                 <main className={cn("container mx-auto max-w-full", SpacingClasses.main)}>

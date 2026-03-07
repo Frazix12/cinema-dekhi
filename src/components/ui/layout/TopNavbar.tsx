@@ -16,7 +16,7 @@ import BrandLogo from "../other/BrandLogo";
 const TopNavbar = () => {
   const pathName = usePathname();
   const [{ y }] = useWindowScroll();
-  const opacity = Math.min((y / 1000) * 5, 1);
+  const opacity = Math.min((y / 800) * 4, 1);
   const hrefs = siteConfig.navItems.map((item) => item.href);
   const show = hrefs.includes(pathName);
   const tv = pathName.includes("/tv/");
@@ -33,7 +33,7 @@ const TopNavbar = () => {
       maxWidth="full"
       classNames={{ wrapper: "px-2 md:px-4" }}
       className={cn("inset-0 h-min bg-transparent", {
-        "bg-background": show,
+        "bg-background border-b border-white/5": show,
       })}
     >
       {!show && (
@@ -42,16 +42,22 @@ const TopNavbar = () => {
           style={{ opacity: opacity }}
         />
       )}
-      <NavbarBrand>
+      <NavbarBrand className="md:hidden">
         {show ? <BrandLogo /> : <BackButton href={tv ? "/?content=tv" : "/"} />}
       </NavbarBrand>
+      {/* Desktop: on inner pages, show back button */}
+      {!show && (
+        <NavbarBrand className="hidden md:flex">
+          <BackButton href={tv ? "/?content=tv" : "/"} />
+        </NavbarBrand>
+      )}
       {show && !pathName.startsWith("/search") && (
         <NavbarContent className="hidden w-full max-w-lg gap-2 md:flex" justify="center">
           <NavbarItem className="w-full">
             <Link href="/search" className="w-full">
               <SearchInput
                 className="pointer-events-none"
-                placeholder="Search your favorite movies..."
+                placeholder="Search movies, shows..."
               />
             </Link>
           </NavbarItem>

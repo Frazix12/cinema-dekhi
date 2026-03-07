@@ -41,10 +41,6 @@ const TvShowPlayerSourceSelection: React.FC<TvShowPlayerSourceSelectionProps> = 
             <Clock className="text-success-500" />
             <span>Watch Progress Support</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Ads className="text-primary-500" />
-            <span>May contain popup ads</span>
-          </div>
         </div>
         <SelectButton
           color="warning"
@@ -63,7 +59,6 @@ const TvShowPlayerSourceSelection: React.FC<TvShowPlayerSourceSelectionProps> = 
                   {recommended && <Star className="text-warning" />}
                   {fast && <Rocket className="text-danger" />}
                   {resumable && <Clock className="text-success" />}
-                  {ads && <Ads className="text-primary" />}
                 </div>
               ),
             };

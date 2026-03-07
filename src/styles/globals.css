@@ -12,13 +12,14 @@
   --animate-shine: shine 3s linear infinite;
 
   --font-poppins: var(--font-poppins);
+  --font-playfair: var(--font-playfair);
 
   @keyframes shine {
     0% {
-      background-position: 100%;
+      background-position: 200% center;
     }
     100% {
-      background-position: -100%;
+      background-position: -200% center;
     }
   }
 }

@@ -7,7 +7,7 @@ export const GET = async (request: Request) => {
   const code = searchParams.get("code");
 
   let next = searchParams.get("next") ?? "/";
-  if (!next.startsWith("/")) {
+  if (!next.startsWith("/") || next.startsWith("//")) {
     next = "/";
   }
 
@@ -87,7 +87,9 @@ export const GET = async (request: Request) => {
         // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
         return NextResponse.redirect(`${origin}${next}`);
       } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`);
+        // Avoid using untrusted host directly, but if needed, we should probably validate it. 
+        // For absolute safety, just use origin.
+        return NextResponse.redirect(`${origin}${next}`);
       } else {
         return NextResponse.redirect(`${origin}${next}`);
       }

@@ -14,8 +14,8 @@ import {
 import { TbFolder, TbFolderFilled } from "react-icons/tb";
 
 export const siteConfig: SiteConfigType = {
-  name: "Cinextma",
-  description: "Your only choice for a free movies and tv shows streaming website.",
+  name: "Cinema Dekhi",
+  description: "Stream movies and TV shows in style. Free, fast, and beautiful.",
   favicon: "/favicon.ico",
   navItems: [
     {
@@ -41,12 +41,6 @@ export const siteConfig: SiteConfigType = {
       href: "/library",
       icon: <TbFolder className="size-full" />,
       activeIcon: <TbFolderFilled className="size-full" />,
-    },
-    {
-      label: "About",
-      href: "/about",
-      icon: <IoInformationCircleOutline className="size-full" />,
-      activeIcon: <IoInformationCircle className="size-full" />,
     },
   ],
   themes: [
@@ -129,6 +123,7 @@ export const siteConfig: SiteConfigType = {
   },
   socials: {
     github: "https://github.com/wisnuwirayuda15/cinextma",
+    // Updated for Dekho
   },
 };
 

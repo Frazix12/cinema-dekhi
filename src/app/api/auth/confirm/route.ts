@@ -9,7 +9,10 @@ export const GET = async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const token_hash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
-  const next = searchParams.get("next") ?? "/";
+  let next = searchParams.get("next") ?? "/";
+  if (!next.startsWith("/") || next.startsWith("//")) {
+    next = "/";
+  }
 
   if (token_hash && type) {
     const supabase = await createClient();

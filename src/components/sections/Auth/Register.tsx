@@ -33,9 +33,17 @@ const AuthRegisterForm: React.FC<AuthFormProps> = ({ setForm }) => {
   });
 
   const onSubmit = handleSubmit(async (data) => {
+    // If captcha is not enabled or disabled for dev
+    const hasValidCaptchaKey = env.NEXT_PUBLIC_CAPTCHA_SITE_KEY && env.NEXT_PUBLIC_CAPTCHA_SITE_KEY !== "your_captcha_site_key";
+
     if (isEmpty(data.captchaToken)) {
-      setIsVerifying(true);
-      return;
+      if (hasValidCaptchaKey) {
+        setIsVerifying(true);
+        return;
+      } else {
+        // Bypass Turnstile immediately if no valid site key is configured
+        data.captchaToken = "bypassed";
+      }
     }
 
     const { success, message } = await signUp(data);

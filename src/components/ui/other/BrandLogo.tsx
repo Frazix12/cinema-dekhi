@@ -1,10 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Saira } from "@/utils/fonts";
+import { Playfair } from "@/utils/fonts";
 import { cn } from "@/utils/helpers";
-import { Next } from "@/utils/icons";
-import useDiscoverFilters from "@/hooks/useDiscoverFilters";
 
 export interface BrandLogoProps {
   animate?: boolean;
@@ -12,32 +10,21 @@ export interface BrandLogoProps {
 }
 
 const BrandLogo: React.FC<BrandLogoProps> = ({ animate = false, className }) => {
-  const { content } = useDiscoverFilters();
-
   return (
     <Link href="/" className="group">
       <span
         className={cn(
-          "flex items-center bg-linear-to-r from-transparent from-80% via-white to-transparent bg-size-[200%_100%] bg-clip-text bg-position-[40%] text-2xl font-semibold text-foreground/60 md:text-3xl",
-          "tracking-widest transition-[letter-spacing] group-hover:tracking-[0.2em]",
+          "flex items-center gap-0.5 text-2xl font-bold tracking-[0.18em] md:text-3xl",
+          "transition-[letter-spacing] group-hover:tracking-[0.28em]",
+          "bg-linear-to-r from-primary via-secondary to-primary bg-clip-text text-transparent",
           {
-            "animate-shine": animate,
-            "text-foreground": !animate,
+            "bg-size-[200%_100%] animate-shine": animate,
           },
-          Saira.className,
+          Playfair.className,
           className,
         )}
       >
-        CINE{" "}
-        <span>
-          <Next
-            className={cn("size-full px-[2px] transition-colors", {
-              "text-primary": content === "movie",
-              "text-warning": content === "tv",
-            })}
-          />
-        </span>{" "}
-        TMA
+        CINEMA DEKHI
       </span>
     </Link>
   );
