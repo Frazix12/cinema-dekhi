@@ -17,9 +17,10 @@ import TvShowPosterCard from "../TV/Cards/Poster";
 import { getLoadingLabel } from "@/utils/movies";
 import { ITEMS_PER_PAGE } from "@/utils/constants";
 import ConfirmationModal from "@/components/ui/overlay/ConfirmationModal";
+import AnimePosterCard from "../Anime/Cards/Poster";
 
 type SortOption = "title" | "release_date" | "vote_average" | "created_at";
-type FilterType = "movie" | "tv" | "all";
+type FilterType = "movie" | "tv" | "anime" | "all";
 
 const SORT_OPTIONS: { key: SortOption; label: string }[] = [
   { key: "title", label: "Title" },
@@ -61,7 +62,7 @@ const LibraryList = () => {
   }, [inViewport]);
 
   const clearWatchlistMutation = useMutation({
-    mutationFn: async (type: "movie" | "tv") => {
+    mutationFn: async (type: "movie" | "tv" | "anime") => {
       if (!user) throw new Error("User not authenticated");
       const result = await removeAllWatchlist(type);
       if (!result.success) {
@@ -75,7 +76,7 @@ const LibraryList = () => {
       queryClient.invalidateQueries({ queryKey: ["watchlist"] });
 
       addToast({
-        title: `Cleared ${count} ${type === "movie" ? "movies" : "TV shows"} from your watchlist!`,
+        title: `Cleared ${count} ${type === "movie" ? "movies" : type === "tv" ? "TV shows" : "anime"} from your watchlist!`,
         color: "success",
         icon: <Trash />,
       });
@@ -157,7 +158,7 @@ const LibraryList = () => {
               }}
               isLoading={clearWatchlistMutation.isPending || isPending}
             >
-              Clear {content === "movie" ? "Movies" : "TV Shows"} from Watchlist
+              Clear {content === "movie" ? "Movies" : content === "tv" ? "TV Shows" : "Anime"} from Watchlist
             </Button>
           )}
         </div>
@@ -172,6 +173,22 @@ const LibraryList = () => {
           <>
             <div className="movie-grid">
               {sortedWatchlist.map((data) => {
+                if (data.type === "anime") {
+                  return (
+                    <Suspense key={`anime-${data.id}`}>
+                      <AnimePosterCard
+                        variant="bordered"
+                        anime={{
+                          mal_id: data.id,
+                          title: data.title,
+                          images: { jpg: { large_image_url: data.poster_path || "" } },
+                          score: data.vote_average,
+                          year: data.release_date ? parseInt(data.release_date.split("-")[0]) : null,
+                        } as any}
+                      />
+                    </Suspense>
+                  );
+                }
                 if (data.type === "tv") {
                   return (
                     <Suspense key={`tv-${data.id}`}>
@@ -229,7 +246,7 @@ const LibraryList = () => {
         ) : (
           <div className="flex h-[30vh] items-center justify-center">
             <p className="text-default-500">
-              No {content === "movie" ? "movies" : "TV shows"} in your watchlist yet.
+              No {content === "movie" ? "movies" : content === "tv" ? "TV shows" : "anime"} in your watchlist yet.
             </p>
           </div>
         )}
@@ -238,7 +255,7 @@ const LibraryList = () => {
       <BackToTopButton />
 
       <ConfirmationModal
-        title={`Clear ${content === "movie" ? "Movies" : "TV Shows"}?`}
+        title={`Clear ${content === "movie" ? "Movies" : content === "tv" ? "TV Shows" : "Anime"}?`}
         isOpen={opened}
         onClose={close}
         onConfirm={confirmClearWatchlist}
@@ -246,7 +263,7 @@ const LibraryList = () => {
         isLoading={clearWatchlistMutation.isPending}
       >
         <p>
-          Are you sure you want to remove all {content === "movie" ? "movies" : "TV shows"} from
+          Are you sure you want to remove all {content === "movie" ? "movies" : content === "tv" ? "TV shows" : "anime"} from
           your watchlist? This action cannot be undone.
         </p>
         <p className="text-default-500 text-sm">

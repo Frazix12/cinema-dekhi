@@ -8,14 +8,26 @@ interface FetchDiscoverTvShows {
   page?: number;
   type?: DiscoverTvShowsFetchQueryType;
   genres?: string;
+  sortBy?: string;
+  runtimeMin?: number;
+  runtimeMax?: number;
 }
 
 const useFetchDiscoverTvShows = ({
   page = 1,
   type = "discover",
   genres,
+  sortBy,
+  runtimeMin,
+  runtimeMax,
 }: FetchDiscoverTvShows): Promise<TvShowDiscoverResult> => {
-  const discover = () => tmdb.discover.tvShow({ page: page, with_genres: genres });
+  const discover = () => tmdb.discover.tvShow({
+    page: page,
+    with_genres: genres,
+    sort_by: sortBy as any,
+    'with_runtime.gte': runtimeMin,
+    'with_runtime.lte': runtimeMax
+  });
   const todayTrending = () => tmdb.trending.trending("tv", "day", { page: page });
   const thisWeekTrending = () => tmdb.trending.trending("tv", "week", { page: page });
   const popular = () => tmdb.tvShows.popular({ page: page });

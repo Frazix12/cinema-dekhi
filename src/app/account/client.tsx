@@ -7,6 +7,7 @@ import { User, Logout } from "@/utils/icons";
 import { signOut } from "@/actions/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import ApiKeysSection from "./ApiKeysSection";
 
 export default function AccountDetails() {
   const { data: user, isLoading } = useSupabaseUser();
@@ -76,6 +77,8 @@ export default function AccountDetails() {
           </Button>
         </CardBody>
       </Card>
+
+      <ApiKeysSection />
     </div>
   );
 }

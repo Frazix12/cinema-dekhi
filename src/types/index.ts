@@ -1,6 +1,6 @@
 import { Movie, TV } from "tmdb-ts/dist/types";
 
-export type ContentType = "movie" | "tv";
+export type ContentType = "movie" | "tv" | "anime";
 
 export type Params<T> = {
   params: Promise<T>;
@@ -27,7 +27,9 @@ export type TvShowParam =
   | "onTheAir"
   | "topRated";
 
-export type QueryList<T extends Movie | TV> = {
+export type AnimeParam = "topAnime" | "trendingAnime" | "upcomingAnime";
+
+export type QueryList<T extends Movie | TV | any> = {
   name: string;
   query: () => Promise<{
     page: number;
@@ -35,7 +37,7 @@ export type QueryList<T extends Movie | TV> = {
     total_results: number;
     total_pages: number;
   }>;
-  param: T extends Movie ? MovieParam : TvShowParam;
+  param: T extends Movie ? MovieParam : T extends TV ? TvShowParam : AnimeParam;
 };
 
 export type SiteConfigType = {
@@ -51,6 +53,7 @@ export type SiteConfigType = {
   queryLists: {
     movies: QueryList<Movie>[];
     tvShows: QueryList<TV>[];
+    anime: QueryList<any>[];
   };
   themes: {
     name: "light" | "dark" | "system";

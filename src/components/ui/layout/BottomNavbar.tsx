@@ -8,22 +8,26 @@ import { Chip } from "@heroui/chip";
 
 const BottomNavbar = () => {
   const pathName = usePathname();
-  const hrefs = siteConfig.navItems.map((item) => item.href);
+  const mobileNavItems = siteConfig.navItems.filter((item) => item.href !== "/api-docs");
+  const hrefs = mobileNavItems.map((item) => item.href);
   const show = hrefs.includes(pathName);
 
   return (
     show && (
       <>
         <div className="pt-20 md:hidden" />
-        <div className="fixed bottom-0 left-0 z-50 block h-fit w-full translate-y-px border-t border-secondary-background bg-background py-2 md:hidden">
-          <div className="mx-auto grid h-full max-w-lg grid-cols-4">
-            {siteConfig.navItems.map((item) => {
+        <div className="border-secondary-background bg-background fixed bottom-0 left-0 z-50 block h-fit w-full translate-y-px border-t py-2 md:hidden">
+          <div
+            className="mx-auto grid h-full max-w-lg"
+            style={{ gridTemplateColumns: `repeat(${mobileNavItems.length}, minmax(0, 1fr))` }}
+          >
+            {mobileNavItems.map((item) => {
               const isActive = pathName === item.href;
               return (
                 <Link
                   href={item.href}
                   key={item.href}
-                  className="flex items-center justify-center text-foreground"
+                  className="text-foreground flex items-center justify-center"
                 >
                   <div className="flex max-h-[50px] flex-col items-center justify-center">
                     <Chip

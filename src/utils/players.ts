@@ -224,3 +224,32 @@ export const getTvShowPlayers = (
     },
   ];
 };
+
+/**
+ * Generates a list of anime players using VidNest.
+ * 
+ * @param {string | number} anilistId - The Anilist ID of the anime.
+ * @param {string | number} episode - The episode number.
+ * @param {"sub" | "dub"} type - The audio type: subbed or dubbed. Defaults to "sub".
+ * @returns {PlayersProps[]} - An array of objects, each containing the player title and source URL.
+ */
+export const getAnimePlayers = (
+  anilistId: string | number,
+  episode: string | number,
+  type: "sub" | "dub" = "sub"
+): PlayersProps[] => {
+  return [
+    {
+      title: "VidNest",
+      source: `https://vidnest.fun/anime/${anilistId}/${episode}/${type}`,
+      recommended: true,
+      fast: true,
+    },
+    {
+      title: "AnimePahe",
+      source: `https://vidnest.fun/animepahe/${anilistId}/${episode}/${type}`,
+      recommended: true,
+      fast: true,
+    }
+  ];
+};

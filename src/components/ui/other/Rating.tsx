@@ -11,7 +11,7 @@ const Rating: React.FC<RatingProps> = ({ rate = 0, count = 0 }) => {
     <div className="flex items-center gap-1 font-semibold text-warning-500">
       <Star />
       <p>
-        {rate.toFixed(1)} {count > 0 && `(${formatNumber(count)})`}
+        {Number(rate || 0).toFixed(1)} {Number(count || 0) > 0 && `(${formatNumber(Number(count || 0))})`}
       </p>
     </div>
   );

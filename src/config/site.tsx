@@ -9,8 +9,12 @@ import {
   IoInformationCircle,
   IoInformationCircleOutline,
   IoMoon,
+  IoPlayCircle,
+  IoPlayCircleOutline,
 } from "react-icons/io5";
-import { TbFolder, TbFolderFilled } from "react-icons/tb";
+import { TbFolder, TbFolderFilled, TbApi } from "react-icons/tb";
+import { FaServer as Server } from "react-icons/fa";
+import { jikan } from "@/api/jikan";
 
 export const siteConfig: SiteConfigType = {
   name: "Cinema Dekhi",
@@ -40,6 +44,12 @@ export const siteConfig: SiteConfigType = {
       href: "/account",
       icon: <GoPerson className="size-full" />,
       activeIcon: <GoPersonFill className="size-full" />,
+    },
+    {
+      label: "API Docs",
+      href: "/api-docs",
+      icon: <Server className="size-full" />,
+      activeIcon: <Server className="size-full" />,
     },
   ],
   themes: [
@@ -117,6 +127,35 @@ export const siteConfig: SiteConfigType = {
         // @ts-expect-error: Property 'adult' is missing in type 'TopRatedTvShowResult' but required in type 'TV'.
         query: () => tmdb.tvShows.topRated(),
         param: "topRated",
+      },
+    ],
+    anime: [
+      {
+        name: "Top Anime",
+        query: async () => {
+          const res = await jikan.topAnime();
+          return {
+            page: res.pagination.current_page,
+            results: res.data,
+            total_pages: res.pagination.last_visible_page,
+            total_results: res.pagination.items.total,
+          };
+        },
+        param: "topAnime",
+      },
+      {
+        name: "Upcoming Anime",
+        query: async () => {
+          // Using search with upcoming status as a proxy for upcoming Anime
+          const res = await fetch("https://api.jikan.moe/v4/seasons/upcoming").then(r => r.json());
+          return {
+            page: res.pagination.current_page,
+            results: res.data,
+            total_pages: res.pagination.last_visible_page,
+            total_results: res.pagination.items.total,
+          };
+        },
+        param: "upcomingAnime",
       },
     ],
   },

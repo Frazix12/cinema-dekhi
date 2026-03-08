@@ -5,7 +5,7 @@ import Highlight from "@/components/ui/other/Highlight";
 import { useSearchModal } from "@/hooks/useSearchModal";
 import { SEARCH_HISTORY_STORAGE_KEY } from "@/utils/constants";
 import { cn, isEmpty } from "@/utils/helpers";
-import { ArrowUpLeft, Close, History, Movie, Search, TV } from "@/utils/icons";
+import { ArrowUpLeft, Close, History, Movie, Robot, Search, TV } from "@/utils/icons";
 import { useRouter } from "@bprogress/next/app";
 import {
   Button,
@@ -68,11 +68,11 @@ const FloatingSearch: React.FC = () => {
       router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
       onClose();
     },
-    [searchQuery, searchHistories, router, onClose],
+    [searchQuery, searchHistories, router, onClose, setSearchHistories],
   );
 
   const handleSuggestionSelect = useCallback(
-    (id: number, type: "movie" | "tv") => {
+    (id: number, type: "movie" | "tv" | "anime") => {
       router.push(`/${type}/${id}`);
       onClose();
     },
@@ -124,8 +124,8 @@ const FloatingSearch: React.FC = () => {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search movies & TV shows..."
-                className="min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-default-400"
+                placeholder="Search movies, TV shows, and anime..."
+                className="placeholder:text-default-400 min-w-0 flex-1 bg-transparent text-base outline-none"
                 autoComplete="off"
               />
               <div className="flex items-center gap-2">
@@ -158,7 +158,7 @@ const FloatingSearch: React.FC = () => {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15 }}
                 >
-                  <p className="text-default-400 px-4 py-2 text-xs font-semibold uppercase tracking-wider">
+                  <p className="text-default-400 px-4 py-2 text-xs font-semibold tracking-wider uppercase">
                     Results for &quot;{debouncedSearchQuery}&quot;
                   </p>
                   <Listbox
@@ -167,13 +167,15 @@ const FloatingSearch: React.FC = () => {
                     classNames={{ list: "gap-0" }}
                   >
                     <>
-                      {(data?.data || []).map(({ id, title, type }, index) => (
+                      {(data?.data || []).map(({ id, title, type }) => (
                         <ListboxItem
-                          key={`result-${index}`}
+                          key={`${type}-${id}`}
                           className="rounded-none px-4 py-2.5"
                           startContent={
                             type === "movie" ? (
                               <Movie className="text-primary shrink-0" />
+                            ) : type === "anime" ? (
+                              <Robot className="text-secondary shrink-0" />
                             ) : (
                               <TV className="text-warning shrink-0" />
                             )
@@ -185,16 +187,18 @@ const FloatingSearch: React.FC = () => {
                                   "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase",
                                   type === "movie"
                                     ? "bg-primary/20 text-primary"
-                                    : "bg-warning/20 text-warning",
+                                    : type === "anime"
+                                      ? "bg-secondary/20 text-secondary"
+                                      : "bg-warning/20 text-warning",
                                 )}
                               >
-                                {type === "movie" ? "Movie" : "TV"}
+                                {type === "movie" ? "Movie" : type === "anime" ? "Anime" : "TV"}
                               </span>
                               <Button
                                 isIconOnly
                                 variant="light"
                                 size="sm"
-                                className="size-6 text-default-400"
+                                className="text-default-400 size-6"
                                 onPress={() => setSearchQuery(title)}
                                 type="button"
                               >
@@ -215,6 +219,7 @@ const FloatingSearch: React.FC = () => {
                   <button
                     onClick={handleSubmit}
                     className="hover:bg-default-100 flex w-full items-center justify-between border-t border-white/10 px-4 py-3 text-sm transition-colors"
+                    type="button"
                   >
                     <span className="text-default-600">
                       See all results for{" "}
@@ -235,7 +240,7 @@ const FloatingSearch: React.FC = () => {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15 }}
                 >
-                  <p className="text-default-400 px-4 py-2 text-xs font-semibold uppercase tracking-wider">
+                  <p className="text-default-400 px-4 py-2 text-xs font-semibold tracking-wider uppercase">
                     Recent Searches
                   </p>
                   <Listbox
@@ -244,9 +249,9 @@ const FloatingSearch: React.FC = () => {
                     classNames={{ list: "gap-0" }}
                   >
                     <>
-                      {[...searchHistories].reverse().map((history, index) => (
+                      {[...searchHistories].reverse().map((history) => (
                         <ListboxItem
-                          key={`history-${index}`}
+                          key={history}
                           className="rounded-none px-4 py-2.5"
                           startContent={<History className="text-default-400 shrink-0" />}
                           endContent={
@@ -254,11 +259,9 @@ const FloatingSearch: React.FC = () => {
                               isIconOnly
                               variant="light"
                               size="sm"
-                              className="size-6 text-default-400"
+                              className="text-default-400 size-6"
                               onPress={() =>
-                                setSearchHistories(
-                                  searchHistories.filter((h) => h !== history),
-                                )
+                                setSearchHistories(searchHistories.filter((h) => h !== history))
                               }
                               type="button"
                             >
@@ -285,7 +288,7 @@ const FloatingSearch: React.FC = () => {
                 >
                   <Search className="text-default-300 text-4xl" />
                   <p className="text-default-500 text-sm">
-                    Search for your favorite movies & TV shows
+                    Search for your favorite movies, TV shows, and anime
                   </p>
                 </motion.div>
               )}

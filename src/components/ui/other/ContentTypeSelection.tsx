@@ -2,7 +2,7 @@
 
 import useDiscoverFilters from "@/hooks/useDiscoverFilters";
 import { ContentType } from "@/types";
-import { Movie, TV } from "@/utils/icons";
+import { Movie, TV, Play } from "@/utils/icons";
 import { Tabs, Tab, TabsProps } from "@heroui/react";
 
 interface ContentTypeSelectionProps extends TabsProps {
@@ -24,7 +24,7 @@ const ContentTypeSelection: React.FC<ContentTypeSelectionProps> = ({ onTypeChang
       variant="underlined"
       selectedKey={content}
       aria-label="Content Type Selection"
-      color={content === "movie" ? "primary" : "warning"}
+      color={content === "movie" ? "primary" : content === "tv" ? "warning" : "secondary"}
       onSelectionChange={(value) => handleTabChange(value as ContentType)}
       classNames={{
         tabContent: "pb-2",
@@ -47,6 +47,15 @@ const ContentTypeSelection: React.FC<ContentTypeSelectionProps> = ({ onTypeChang
           <div className="flex items-center space-x-2">
             <TV />
             <span>TV Series</span>
+          </div>
+        }
+      />
+      <Tab
+        key="anime"
+        title={
+          <div className="flex items-center space-x-2">
+            <Play />
+            <span>Anime</span>
           </div>
         }
       />

@@ -8,14 +8,26 @@ interface FetchDiscoverMovies {
   page?: number;
   type?: DiscoverMoviesFetchQueryType;
   genres?: string;
+  sortBy?: string;
+  runtimeMin?: number;
+  runtimeMax?: number;
 }
 
 const useFetchDiscoverMovies = ({
   page = 1,
   type = "discover",
   genres,
+  sortBy,
+  runtimeMin,
+  runtimeMax,
 }: FetchDiscoverMovies): Promise<MovieDiscoverResult> => {
-  const discover = () => tmdb.discover.movie({ page: page, with_genres: genres });
+  const discover = () => tmdb.discover.movie({
+    page: page,
+    with_genres: genres,
+    sort_by: sortBy as any,
+    'with_runtime.gte': runtimeMin,
+    'with_runtime.lte': runtimeMax
+  });
   const todayTrending = () => tmdb.trending.trending("movie", "day", { page: page });
   const thisWeekTrending = () => tmdb.trending.trending("movie", "week", { page: page });
   const popular = () => tmdb.movies.popular({ page: page });

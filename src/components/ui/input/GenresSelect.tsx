@@ -9,7 +9,18 @@ interface GenresSelectProps extends Omit<SelectProps, "children" | "selectionMod
   onGenreChange?: (genres: Set<string> | null) => void;
 }
 
-const getQuery = (type: ContentType) => {
+import { jikan } from "@/api/jikan";
+
+const getQuery = async (type: ContentType) => {
+  if (type === "anime") {
+    const res = await jikan.getAnimeGenres();
+    return {
+      genres: res.data.map((g: any) => ({
+        id: g.mal_id,
+        name: g.name
+      }))
+    };
+  }
   return type === "movie" ? tmdb.genres.movies() : tmdb.genres.tvShows();
 };
 
@@ -43,7 +54,7 @@ const GenresSelect: React.FC<GenresSelectProps> = ({
         )
       }
     >
-      {GENRES.map(({ id, name }) => {
+      {GENRES.map(({ id, name }: { id: string | number; name: string }) => {
         return <SelectItem key={id}>{name}</SelectItem>;
       })}
     </Select>

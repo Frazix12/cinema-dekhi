@@ -1,13 +1,14 @@
 "use server";
 
 import { tmdb } from "@/api/tmdb";
+import { jikan } from "@/api/jikan";
 import { ActionResponse } from "@/types";
 import { isEmpty } from "@/utils/helpers";
 
 export type SearchSuggestion = {
   id: number;
   title: string;
-  type: "movie" | "tv";
+  type: "movie" | "tv" | "anime";
 };
 
 export const getSearchSuggestions = async (
@@ -23,9 +24,10 @@ export const getSearchSuggestions = async (
       };
     }
 
-    const [movies, tvShows] = await Promise.all([
+    const [movies, tvShows, anime] = await Promise.all([
       tmdb.search.movies({ query, page: 1 }),
       tmdb.search.tvShows({ query, page: 1 }),
+      jikan.searchAnime(query, 1),
     ]);
 
     const movieSuggestions: SearchSuggestion[] = movies.results.map((movie) => ({
@@ -38,8 +40,15 @@ export const getSearchSuggestions = async (
       title: tv.name,
       type: "tv",
     }));
+    const animeSuggestions: SearchSuggestion[] = anime.data
+      .map((item: { mal_id: number; title: string; title_english?: string | null }) => ({
+        id: item.mal_id,
+        title: item.title_english || item.title,
+        type: "anime",
+      }))
+      .filter((item: SearchSuggestion) => Number.isFinite(item.id) && !isEmpty(item.title));
 
-    const suggestions = [...movieSuggestions, ...tvSuggestions];
+    const suggestions = [...movieSuggestions, ...tvSuggestions, ...animeSuggestions];
 
     if (isEmpty(suggestions)) {
       return {

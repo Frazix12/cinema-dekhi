@@ -37,3 +37,14 @@ export const DISCOVER_TVS_VALID_QUERY_TYPES = [
 ] as const;
 
 export type DiscoverTvShowsFetchQueryType = (typeof DISCOVER_TVS_VALID_QUERY_TYPES)[number];
+
+export const DISCOVER_ANIME_VALID_QUERY_TYPES = [
+  "discover",
+  "topAnime",
+  "upcomingAnime",
+  "tv",
+  "movie",
+  "ova",
+] as const;
+
+export type DiscoverAnimeFetchQueryType = (typeof DISCOVER_ANIME_VALID_QUERY_TYPES)[number];

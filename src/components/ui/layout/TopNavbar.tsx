@@ -16,11 +16,11 @@ import BrandLogo from "../other/BrandLogo";
 const TopNavbar = () => {
   const pathName = usePathname();
   const [{ y }] = useWindowScroll();
-  const opacity = Math.min((y / 800) * 4, 1);
+  const overlayOpacity = Math.min(Math.max((y / 800) * 4, 0.35), 1);
   const hrefs = siteConfig.navItems.map((item) => item.href);
   const show = hrefs.includes(pathName);
   const tv = pathName.includes("/tv/");
-  const player = pathName.includes("/player");
+  const player = pathName.includes("/player") || pathName.includes("/stream/");
   const auth = pathName.includes("/auth");
   const { open: openSearch } = useSearchModal();
 
@@ -35,24 +35,28 @@ const TopNavbar = () => {
       position="sticky"
       maxWidth="full"
       classNames={{ wrapper: "px-2 md:px-4" }}
-      className={cn("inset-0 h-min bg-transparent", {
-        "bg-background/80 backdrop-blur-md border-b border-white/5": show,
+      className={cn("inset-0 z-50 h-min bg-transparent", {
+        "bg-background/80 border-b border-white/5 backdrop-blur-md": show,
       })}
     >
       {!show && (
         <div
-          className="absolute inset-0 h-full w-full bg-background/80 backdrop-blur-md border-b border-white/5"
-          style={{ opacity: opacity }}
+          className="bg-background/80 pointer-events-none absolute inset-0 h-full w-full border-b border-white/5 backdrop-blur-md"
+          aria-hidden="true"
+          style={{ opacity: overlayOpacity }}
         />
       )}
       <NavbarBrand className="md:hidden">
         {show ? <BrandLogo /> : <BackButton href={tv ? "/?content=tv" : "/"} />}
       </NavbarBrand>
       {/* Desktop: brand or back button on left */}
-      <NavbarBrand className="hidden md:flex shrink-0">
+      <NavbarBrand className="hidden shrink-0 md:flex">
         {show ? <BrandLogo /> : <BackButton href={tv ? "/?content=tv" : "/"} />}
       </NavbarBrand>
-      <NavbarContent className="hidden w-full max-w-[400px] lg:max-w-lg gap-2 md:flex" justify="center">
+      <NavbarContent
+        className="hidden w-full max-w-[400px] gap-2 md:flex lg:max-w-lg"
+        justify="center"
+      >
         <NavbarItem className="w-full">
           <button
             onClick={openSearch}
@@ -73,13 +77,19 @@ const TopNavbar = () => {
         </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
-        <NavbarItem className="flex gap-1 items-center">
+        <NavbarItem className="flex items-center gap-1">
           <ThemeSwitchDropdown />
           <FullscreenToggleButton />
           <button
             onClick={openSearch}
-            className="md:hidden rounded-full p-2 hover:bg-white/10 text-foreground"
+            className={cn(
+              "text-foreground rounded-full p-2 transition-colors md:hidden",
+              show
+                ? "hover:bg-white/10"
+                : "bg-background/70 hover:bg-background/80 border border-white/10 backdrop-blur-md",
+            )}
             aria-label="Open Search"
+            type="button"
           >
             <Search size={22} />
           </button>

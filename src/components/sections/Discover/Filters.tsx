@@ -2,10 +2,11 @@ import GenresSelect from "@/components/ui/input/GenresSelect";
 import ContentTypeSelection from "@/components/ui/other/ContentTypeSelection";
 import useDiscoverFilters from "@/hooks/useDiscoverFilters";
 import { DiscoverMoviesFetchQueryType } from "@/types/movie";
-import { Select, SelectItem, Button } from "@heroui/react";
+import { Select, SelectItem, Button, Slider } from "@heroui/react";
 
 const DiscoverFilters = () => {
-  const { types, content, genres, queryType, setQueryType, setGenres, resetFilters } =
+  const { types, content, genres, queryType, sortBy, runtimeMin, runtimeMax,
+    setQueryType, setGenres, setSortBy, setRuntimeMin, setRuntimeMax, resetFilters } =
     useDiscoverFilters();
 
   return (
@@ -38,7 +39,58 @@ const DiscoverFilters = () => {
             setQueryType("discover");
           }}
         />
+        {queryType === "discover" && content !== "anime" && (
+          <Select
+            size="sm"
+            label="Sort By"
+            placeholder="Select sorting"
+            className="max-w-xs"
+            selectedKeys={[sortBy]}
+            onChange={({ target }) => setSortBy(target.value)}
+          >
+            <SelectItem key="popularity.desc">Most Popular</SelectItem>
+            <SelectItem key="vote_average.desc">Top Rated</SelectItem>
+            <SelectItem key="primary_release_date.desc">Release Date</SelectItem>
+            <SelectItem key="revenue.desc">Revenue</SelectItem>
+          </Select>
+        )}
+        {queryType === "discover" && content === "anime" && (
+          <Select
+            size="sm"
+            label="Sort By"
+            placeholder="Select sorting"
+            className="max-w-xs"
+            selectedKeys={[sortBy]}
+            onChange={({ target }) => setSortBy(target.value)}
+          >
+            <SelectItem key="popularity">Most Popular</SelectItem>
+            <SelectItem key="score">Top Rated</SelectItem>
+            <SelectItem key="episodes">Most Episodes</SelectItem>
+            <SelectItem key="start_date">Release Date</SelectItem>
+          </Select>
+        )}
       </div>
+
+      {queryType === "discover" && content !== "anime" && (
+        <div className="w-full max-w-sm px-4 py-2">
+          <Slider
+            label="Duration (minutes)"
+            step={10}
+            minValue={0}
+            maxValue={400}
+            defaultValue={[runtimeMin, runtimeMax]}
+            onChangeEnd={(val) => {
+              if (Array.isArray(val)) {
+                setRuntimeMin(val[0]);
+                setRuntimeMax(val[1]);
+              }
+            }}
+            className="w-full"
+            size="sm"
+          />
+        </div>
+      )}
+
       <Button size="sm" onPress={resetFilters}>
         Reset Filters
       </Button>
