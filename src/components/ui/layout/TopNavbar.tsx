@@ -9,7 +9,6 @@ import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/react";
 import { useHotkeys, useWindowScroll } from "@mantine/hooks";
 import { usePathname } from "next/navigation";
 import FullscreenToggleButton from "../button/FullscreenToggleButton";
-import UserProfileButton from "../button/UserProfileButton";
 import SearchInput from "../input/SearchInput";
 import ThemeSwitchDropdown from "../input/ThemeSwitchDropdown";
 import BrandLogo from "../other/BrandLogo";
@@ -37,51 +36,53 @@ const TopNavbar = () => {
       maxWidth="full"
       classNames={{ wrapper: "px-2 md:px-4" }}
       className={cn("inset-0 h-min bg-transparent", {
-        "bg-background border-b border-white/5": show,
+        "bg-background/80 backdrop-blur-md border-b border-white/5": show,
       })}
     >
       {!show && (
         <div
-          className="border-background bg-background absolute inset-0 h-full w-full border-b"
+          className="absolute inset-0 h-full w-full bg-background/80 backdrop-blur-md border-b border-white/5"
           style={{ opacity: opacity }}
         />
       )}
       <NavbarBrand className="md:hidden">
         {show ? <BrandLogo /> : <BackButton href={tv ? "/?content=tv" : "/"} />}
       </NavbarBrand>
-      {/* Desktop: on inner pages, show back button */}
-      {!show && (
-        <NavbarBrand className="hidden md:flex">
-          <BackButton href={tv ? "/?content=tv" : "/"} />
-        </NavbarBrand>
-      )}
-      {show && (
-        <NavbarContent className="hidden w-full max-w-lg gap-2 md:flex" justify="center">
-          <NavbarItem className="w-full">
-            <button
-              onClick={openSearch}
-              className="w-full cursor-pointer"
-              aria-label="Open Search"
-              type="button"
-            >
-              <SearchInput
-                className="pointer-events-none"
-                placeholder="Search movies & TV shows..."
-                endContent={
-                  <kbd className="bg-default-100 text-default-500 hidden rounded px-1.5 py-0.5 text-xs md:inline-flex">
-                    CTRL+K
-                  </kbd>
-                }
-              />
-            </button>
-          </NavbarItem>
-        </NavbarContent>
-      )}
+      {/* Desktop: brand or back button on left */}
+      <NavbarBrand className="hidden md:flex shrink-0">
+        {show ? <BrandLogo /> : <BackButton href={tv ? "/?content=tv" : "/"} />}
+      </NavbarBrand>
+      <NavbarContent className="hidden w-full max-w-[400px] lg:max-w-lg gap-2 md:flex" justify="center">
+        <NavbarItem className="w-full">
+          <button
+            onClick={openSearch}
+            className="w-full cursor-pointer"
+            aria-label="Open Search"
+            type="button"
+          >
+            <SearchInput
+              className="pointer-events-none"
+              placeholder="Search movies & TV shows..."
+              endContent={
+                <kbd className="bg-default-100 text-default-500 hidden rounded px-1.5 py-0.5 text-xs md:inline-flex">
+                  CTRL+K
+                </kbd>
+              }
+            />
+          </button>
+        </NavbarItem>
+      </NavbarContent>
       <NavbarContent justify="end">
-        <NavbarItem className="flex gap-1">
+        <NavbarItem className="flex gap-1 items-center">
           <ThemeSwitchDropdown />
           <FullscreenToggleButton />
-          <UserProfileButton />
+          <button
+            onClick={openSearch}
+            className="md:hidden rounded-full p-2 hover:bg-white/10 text-foreground"
+            aria-label="Open Search"
+          >
+            <Search size={22} />
+          </button>
         </NavbarItem>
       </NavbarContent>
     </Navbar>

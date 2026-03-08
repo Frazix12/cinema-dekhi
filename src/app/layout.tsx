@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { siteConfig } from "@/config/site";
-import { Poppins, Playfair } from "@/utils/fonts";
+import { Inter } from "@/utils/fonts";
 import "../styles/globals.css";
 import "../styles/lightbox.css";
 import Providers from "./providers";
@@ -56,7 +56,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html suppressHydrationWarning lang="en">
-      <body className={cn("bg-background min-h-dvh antialiased select-none", Poppins.className, Playfair.variable)}>
+      <body className={cn("bg-background min-h-dvh antialiased select-none", Inter.className, Inter.variable)}>
         <Suspense>
           <NuqsAdapter>
             <Providers>

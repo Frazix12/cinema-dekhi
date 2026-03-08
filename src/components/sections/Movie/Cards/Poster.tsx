@@ -49,7 +49,7 @@ const MoviePosterCard: React.FC<MoviePosterCardProps> = ({ movie, variant = "ful
       >
         <Link href={`/movie/${movie.id}`} ref={ref} {...longPress()}>
           {variant === "full" && (
-            <div className="group motion-preset-focus relative aspect-2/3 overflow-hidden rounded-lg border-[3px] border-transparent text-white transition-colors hover:border-primary">
+            <div className="group motion-preset-focus relative aspect-2/3 overflow-hidden rounded-xl border border-white/5 bg-white/5 text-white transition-all duration-300 hover:scale-[1.02] hover:border-white/20 hover:shadow-2xl hover:shadow-black/50">
               {hovered && (
                 <Icon
                   icon="line-md:play-filled"

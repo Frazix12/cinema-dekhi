@@ -32,7 +32,7 @@ const ResumeCard: React.FC<ResumeCardProps> = ({ media }) => {
       <Link href={getRedirectLink()}>
         <div
           className={cn(
-            "group motion-preset-focus relative aspect-video overflow-hidden rounded-lg text-white",
+            "group motion-preset-focus relative aspect-video overflow-hidden rounded-xl border border-white/5 bg-white/5 text-white transition-all duration-300 hover:scale-[1.02] hover:border-white/20 hover:shadow-2xl hover:shadow-black/50",
           )}
         >
           <div className="absolute inset-0 flex items-center justify-center">

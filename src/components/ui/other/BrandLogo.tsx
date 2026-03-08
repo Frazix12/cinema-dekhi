@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Playfair } from "@/utils/fonts";
+import { Inter } from "@/utils/fonts";
 import { cn } from "@/utils/helpers";
 
 export interface BrandLogoProps {
@@ -14,13 +14,13 @@ const BrandLogo: React.FC<BrandLogoProps> = ({ animate = false, className }) => 
     <Link href="/" className="group">
       <span
         className={cn(
-          "flex items-center gap-0.5 text-2xl font-bold tracking-[0.18em] md:text-3xl",
+          "flex items-center gap-0.5 text-base font-bold tracking-[0.14em] md:text-3xl md:tracking-[0.18em]",
           "transition-[letter-spacing] group-hover:tracking-[0.28em]",
           "bg-linear-to-r from-primary via-secondary to-primary bg-clip-text text-transparent",
           {
             "bg-size-[200%_100%] animate-shine": animate,
           },
-          Playfair.className,
+          Inter.className,
           className,
         )}
       >

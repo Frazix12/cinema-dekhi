@@ -1,6 +1,6 @@
 import { tmdb } from "@/api/tmdb";
 import { SiteConfigType } from "@/types";
-import { GoHomeFill, GoHome } from "react-icons/go";
+import { GoHomeFill, GoHome, GoPerson, GoPersonFill } from "react-icons/go";
 import { HiComputerDesktop } from "react-icons/hi2";
 import { IoIosSunny } from "react-icons/io";
 import {
@@ -34,6 +34,12 @@ export const siteConfig: SiteConfigType = {
       href: "/library",
       icon: <TbFolder className="size-full" />,
       activeIcon: <TbFolderFilled className="size-full" />,
+    },
+    {
+      label: "Account",
+      href: "/account",
+      icon: <GoPerson className="size-full" />,
+      activeIcon: <GoPersonFill className="size-full" />,
     },
   ],
   themes: [
