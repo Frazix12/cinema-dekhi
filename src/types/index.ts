@@ -27,7 +27,14 @@ export type TvShowParam =
   | "onTheAir"
   | "topRated";
 
-export type AnimeParam = "topAnime" | "trendingAnime" | "upcomingAnime";
+export type AnimeParam =
+  | "discover"
+  | "topAnime"
+  | "trendingAnime"
+  | "upcomingAnime"
+  | "tv"
+  | "movie"
+  | "ova";
 
 export type QueryList<T extends Movie | TV | any> = {
   name: string;

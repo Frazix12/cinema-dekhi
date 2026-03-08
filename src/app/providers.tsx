@@ -4,19 +4,45 @@ import { PropsWithChildren, Suspense } from "react";
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { usePathname, useRouter } from "next/navigation";
-import useDiscoverFilters from "@/hooks/useDiscoverFilters";
+import dynamic from "next/dynamic";
 
-export const queryClient = new QueryClient();
+const ReactQueryDevtools = dynamic(
+  () =>
+    process.env.NODE_ENV === "development"
+      ? import("@tanstack/react-query-devtools").then((mod) => mod.ReactQueryDevtools)
+      : Promise.resolve(() => null),
+  { ssr: false },
+);
+
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      retry: (failureCount, error: unknown) => {
+        const maybeError = error as { status?: number; response?: { status?: number } };
+        const status = maybeError.status ?? maybeError.response?.status;
+        if (typeof status === "number" && status >= 400 && status < 500 && status !== 429) {
+          return false;
+        }
+
+        return failureCount < 2;
+      },
+    },
+  },
+});
 
 export default function Providers({ children }: PropsWithChildren) {
   const { push } = useRouter();
   const pathName = usePathname();
-  const { content } = useDiscoverFilters();
-  const tv = pathName.includes("/tv/") || content === "tv";
+  const isTvPath = pathName.includes("/tv/");
+  const isAnimePath = pathName.includes("/anime/") || pathName.includes("/stream/anime/");
+
+  const progressColor = isAnimePath ? "secondary" : isTvPath ? "warning" : "primary";
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -40,7 +66,7 @@ export default function Providers({ children }: PropsWithChildren) {
           <Suspense>
             <ProgressProvider
               options={{ showSpinner: false }}
-              color={`hsl(var(--heroui-${tv ? "warning" : "primary"}))`}
+              color={`hsl(var(--heroui-${progressColor}))`}
             >
               {children}
             </ProgressProvider>

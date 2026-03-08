@@ -5,12 +5,13 @@ import { useDocumentTitle } from "@mantine/hooks";
 import { siteConfig } from "@/config/site";
 import { FaCirclePlay } from "react-icons/fa6";
 import SectionTitle from "@/components/ui/other/SectionTitle";
-import { Calendar, Clock } from "@/utils/icons";
+import { Calendar, Clock, List } from "@/utils/icons";
 import Link from "next/link";
 import Rating from "@/components/ui/other/Rating";
+import { JikanAnimeDetail } from "@/api/jikan";
 
 interface OverviewSectionProps {
-  anime: any;
+  anime: JikanAnimeDetail;
 }
 
 const OverviewSection: React.FC<OverviewSectionProps> = ({ anime }) => {
@@ -18,6 +19,9 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ anime }) => {
   const posterImage = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url;
   const rating = anime.rating || "";
   const isAdult = rating.includes("R+") || rating.includes("Rx");
+  const isSeries = anime.type?.toLowerCase() !== "movie";
+  const accent = isSeries ? "warning" : "primary";
+  const trailerUrl = anime.trailer?.url || anime.trailer?.embed_url;
 
   useDocumentTitle(`${title} | ${siteConfig.name}`);
 
@@ -39,12 +43,12 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ anime }) => {
           <div id="title" className="flex flex-col gap-1 md:gap-2">
             <div className="flex gap-3">
               <Chip
-                color="primary"
+                color={accent}
                 variant="faded"
                 className="md:text-md text-xs"
                 classNames={{ content: "font-bold" }}
               >
-                Anime
+                {isSeries ? "TV Anime" : "Anime Movie"}
               </Chip>
               {isAdult && (
                 <Chip color="danger" variant="faded">
@@ -59,6 +63,18 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ anime }) => {
             </div>
             <h2 className="text-2xl font-black md:text-4xl">{title}</h2>
             <div className="md:text-md flex flex-wrap gap-1 text-xs md:gap-2">
+              {isSeries && (
+                <>
+                  <div className="flex items-center gap-1">
+                    <List />
+                    <span>
+                      {anime.episodes || "?"} Episode
+                      {anime.episodes && anime.episodes > 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  <p>&#8226;</p>
+                </>
+              )}
               <div className="flex items-center gap-1">
                 <Clock />
                 <span>{anime.duration || "N/A"}</span>
@@ -72,7 +88,7 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ anime }) => {
               <Rating rate={anime.score || 0} />
             </div>
 
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               {anime.genres?.map((g: any) => (
                 <Chip key={g.mal_id} size="sm" variant="flat">
                   {g.name}
@@ -86,12 +102,24 @@ const OverviewSection: React.FC<OverviewSectionProps> = ({ anime }) => {
               <Button
                 as={Link}
                 href={`/stream/anime/${anime.mal_id}/1`}
-                color="primary"
+                color={accent}
                 variant="shadow"
                 startContent={<FaCirclePlay size={22} />}
               >
-                Play Episode 1
+                {isSeries ? "Play Episode 1" : "Play Now"}
               </Button>
+              {trailerUrl && (
+                <Button
+                  as={Link}
+                  href={trailerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  color="danger"
+                  variant="shadow"
+                >
+                  Trailer
+                </Button>
+              )}
             </div>
           </div>
 

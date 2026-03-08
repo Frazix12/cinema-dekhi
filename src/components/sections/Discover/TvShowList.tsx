@@ -4,7 +4,7 @@ import BackToTopButton from "@/components/ui/button/BackToTopButton";
 import Loop from "@/components/ui/other/Loop";
 import PosterCardSkeleton from "@/components/ui/other/PosterCardSkeleton";
 import useDiscoverFilters from "@/hooks/useDiscoverFilters";
-import useFetchDiscoverTvShows from "@/hooks/useFetchDiscoverTvShow";
+import fetchDiscoverTvShows from "@/hooks/useFetchDiscoverTvShow";
 import { DiscoverTvShowsFetchQueryType } from "@/types/movie";
 import { getLoadingLabel } from "@/utils/movies";
 import { Spinner } from "@heroui/react";
@@ -19,9 +19,9 @@ const TvShowDiscoverList = () => {
   const { genresString, queryType, sortBy, runtimeMin, runtimeMax } = useDiscoverFilters();
   const { data, isPending, status, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
-      queryKey: ["discover-tv-shows", queryType, genresString],
+      queryKey: ["discover-tv-shows", queryType, genresString, sortBy, runtimeMin, runtimeMax],
       queryFn: ({ pageParam }) =>
-        useFetchDiscoverTvShows({
+        fetchDiscoverTvShows({
           page: pageParam,
           type: queryType as DiscoverTvShowsFetchQueryType,
           genres: genresString,
@@ -35,10 +35,10 @@ const TvShowDiscoverList = () => {
     });
 
   useEffect(() => {
-    if (inViewport) {
+    if (inViewport && hasNextPage && !isPending && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [inViewport]);
+  }, [fetchNextPage, hasNextPage, inViewport, isFetchingNextPage, isPending]);
 
   if (status === "error") return notFound();
 

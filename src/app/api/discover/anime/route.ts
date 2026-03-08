@@ -11,8 +11,14 @@ export async function GET(request: NextRequest) {
     const page = Number(searchParams.get("page")) || 1;
     const type = (searchParams.get("type") as QueryType) || "discover";
     const genres = searchParams.get("genres") || "";
-    const status = searchParams.get("status") || "";
-    const orderBy = searchParams.get("orderBy") || searchParams.get("order_by") || "";
+    const statusParam = searchParams.get("status") || "";
+    const allowedStatus = ["airing", "complete", "upcoming"];
+    const status = allowedStatus.includes(statusParam) ? statusParam : "";
+    const orderBy =
+      searchParams.get("sortBy") ||
+      searchParams.get("orderBy") ||
+      searchParams.get("order_by") ||
+      "";
 
     if (!DISCOVER_ANIME_VALID_QUERY_TYPES.includes(type)) {
       return errorResponse(
@@ -23,8 +29,14 @@ export async function GET(request: NextRequest) {
 
     const queries: Record<QueryType, () => Promise<unknown>> = {
       discover: () => jikan.discoverAnime(page, genres, "", status, orderBy),
-      topAnime: () => jikan.topAnime(page),
-      upcomingAnime: () => jikan.upcomingAnime(page),
+      topAnime: () =>
+        genres || status || orderBy
+          ? jikan.discoverAnime(page, genres, "", status, orderBy || "score")
+          : jikan.topAnime(page),
+      upcomingAnime: () =>
+        genres || orderBy
+          ? jikan.discoverAnime(page, genres, "", "upcoming", orderBy || "popularity")
+          : jikan.upcomingAnime(page),
       tv: () => jikan.discoverAnime(page, genres, "tv", status, orderBy),
       movie: () => jikan.discoverAnime(page, genres, "movie", status, orderBy),
       ova: () => jikan.discoverAnime(page, genres, "ova", status, orderBy),

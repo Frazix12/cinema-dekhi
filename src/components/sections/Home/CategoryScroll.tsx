@@ -1,6 +1,9 @@
 "use client";
 
-import { Button } from "@heroui/react";
+import { jikan } from "@/api/jikan";
+import { cn } from "@/utils/helpers";
+import { Button, Skeleton } from "@heroui/react";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useQueryState, parseAsStringLiteral } from "nuqs";
 
@@ -48,22 +51,52 @@ const TV_CATEGORIES = [
 const CategoryScroll = () => {
   const [content] = useQueryState(
     "content",
-    parseAsStringLiteral(["movie", "tv"]).withDefault("movie")
+    parseAsStringLiteral(["movie", "tv", "anime"]).withDefault("movie"),
   );
 
-  const categories = content === "movie" ? MOVIE_CATEGORIES : TV_CATEGORIES;
+  const { data: animeGenres, isPending: isAnimeGenresPending } = useQuery({
+    queryFn: jikan.getAnimeGenres,
+    queryKey: ["anime-home-genres"],
+    enabled: content === "anime",
+  });
+
+  const animeCategories =
+    animeGenres?.data?.slice(0, 20).map((genre) => ({ id: genre.mal_id, name: genre.name })) || [];
+  const categories =
+    content === "movie" ? MOVIE_CATEGORIES : content === "tv" ? TV_CATEGORIES : animeCategories;
+  const isAnime = content === "anime";
+  const accentClass =
+    content === "movie"
+      ? "hover:border-primary/35"
+      : content === "tv"
+        ? "hover:border-warning/35"
+        : "hover:border-secondary/35";
+
+  if (content === "anime" && isAnimeGenresPending) {
+    return <Skeleton className="my-2 h-10 w-full rounded-full" />;
+  }
 
   return (
-    <div className="w-full overflow-x-auto no-scrollbar py-2 my-2 mask-linear">
-      <div className="flex gap-2 px-1 w-max">
+    <div
+      className={cn("my-2 w-full py-2", {
+        "overflow-x-hidden": isAnime,
+        "mask-linear no-scrollbar overflow-x-auto": !isAnime,
+      })}
+    >
+      <div
+        className={cn("flex gap-2 px-1", {
+          "w-max": !isAnime,
+          "w-full flex-wrap": isAnime,
+        })}
+      >
         {categories.map((cat) => (
           <Button
             key={cat.id}
             as={Link}
-            href={`/discover?content=${content}&with_genres=${cat.id}`}
+            href={`/discover?content=${content}&genres=${cat.id}`}
             variant="flat"
             size="sm"
-            className="bg-white/5 hover:bg-white/10 text-white/70 hover:text-white backdrop-blur-md transition-all duration-300 rounded-full border border-white/5 hover:border-white/20"
+            className={`rounded-full border border-white/5 bg-white/5 text-white/70 backdrop-blur-md transition-all duration-300 hover:bg-white/10 hover:text-white ${accentClass}`}
           >
             {cat.name}
           </Button>

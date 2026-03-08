@@ -2,6 +2,8 @@
 
 import { tmdb } from "@/api/tmdb";
 import { DiscoverTvShowsFetchQueryType } from "@/types/movie";
+import { filterPagedFeedResults } from "@/utils/movies";
+import { TV } from "tmdb-ts/dist/types";
 import { TvShowDiscoverResult } from "tmdb-ts/dist/types/discover";
 
 interface FetchDiscoverTvShows {
@@ -13,7 +15,7 @@ interface FetchDiscoverTvShows {
   runtimeMax?: number;
 }
 
-const useFetchDiscoverTvShows = ({
+const fetchDiscoverTvShows = ({
   page = 1,
   type = "discover",
   genres,
@@ -21,13 +23,14 @@ const useFetchDiscoverTvShows = ({
   runtimeMin,
   runtimeMax,
 }: FetchDiscoverTvShows): Promise<TvShowDiscoverResult> => {
-  const discover = () => tmdb.discover.tvShow({
-    page: page,
-    with_genres: genres,
-    sort_by: sortBy as any,
-    'with_runtime.gte': runtimeMin,
-    'with_runtime.lte': runtimeMax
-  });
+  const discover = () =>
+    tmdb.discover.tvShow({
+      page: page,
+      with_genres: genres,
+      sort_by: sortBy as any,
+      "with_runtime.gte": runtimeMin,
+      "with_runtime.lte": runtimeMax,
+    });
   const todayTrending = () => tmdb.trending.trending("tv", "day", { page: page });
   const thisWeekTrending = () => tmdb.trending.trending("tv", "week", { page: page });
   const popular = () => tmdb.tvShows.popular({ page: page });
@@ -43,8 +46,14 @@ const useFetchDiscoverTvShows = ({
     topRated,
   }[type];
 
-  // @ts-expect-error: Property 'adult' is missing in type 'PopularTvShowResult' but required in type 'TV'.
-  return queryData();
+  return queryData().then((response) => {
+    const filtered = filterPagedFeedResults(response);
+
+    return {
+      ...filtered,
+      results: filtered.results.map((tv) => ({ adult: false, ...tv })) as TV[],
+    } as TvShowDiscoverResult;
+  });
 };
 
-export default useFetchDiscoverTvShows;
+export default fetchDiscoverTvShows;

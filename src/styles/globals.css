@@ -16,7 +16,7 @@
 
   --color-background: #0a0a0a;
   --color-foreground: #ffffff;
-  --color-primary: #22C55E;
+  --color-primary: #22c55e;
   --color-muted: #a3a3a3;
 
   @keyframes shine {
@@ -39,7 +39,6 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-
   *,
   ::after,
   ::before,
@@ -103,5 +102,16 @@
 
   @media (min-width: 1024px) {
     grid-template-columns: repeat(auto-fit, minmax(200px, 50px));
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

@@ -1,8 +1,16 @@
 import { tmdb } from "@/api/tmdb";
 import { jsonResponse, errorResponse, optionsResponse } from "../../helpers";
 import { type NextRequest } from "next/server";
+import { filterPagedFeedResults } from "@/utils/movies";
 
-const VALID_TYPES = ["discover", "todayTrending", "thisWeekTrending", "popular", "onTheAir", "topRated"] as const;
+const VALID_TYPES = [
+  "discover",
+  "todayTrending",
+  "thisWeekTrending",
+  "popular",
+  "onTheAir",
+  "topRated",
+] as const;
 type QueryType = (typeof VALID_TYPES)[number];
 
 export async function GET(request: NextRequest) {
@@ -25,7 +33,11 @@ export async function GET(request: NextRequest) {
       topRated: () => tmdb.tvShows.topRated({ page }),
     };
 
-    const data = await queries[type]();
+    const filtered = filterPagedFeedResults(await queries[type]());
+    const data = {
+      ...filtered,
+      results: filtered.results.map((tv: Record<string, unknown>) => ({ adult: false, ...tv })),
+    };
     return jsonResponse(data);
   } catch (error) {
     console.error("API /discover/tv error:", error);

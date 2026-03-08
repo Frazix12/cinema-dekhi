@@ -2,7 +2,6 @@
 
 import { tmdb } from "@/api/tmdb";
 import { jikan, PaginationInfo } from "@/api/jikan";
-import { queryClient } from "@/app/providers";
 import AnimePosterCard from "@/components/sections/Anime/Cards/Poster";
 import TvShowHomeCard from "@/components/sections/TV/Cards/Poster";
 import BackToTopButton from "@/components/ui/button/BackToTopButton";
@@ -10,10 +9,10 @@ import { useSearchModal } from "@/hooks/useSearchModal";
 import { isEmpty } from "@/utils/helpers";
 import { getLoadingLabel } from "@/utils/movies";
 import { Movie as MovieIcon, Robot, Search, TV as TVIcon } from "@/utils/icons";
-import { Button, Chip, Spinner } from "@heroui/react";
+import { Chip, Spinner } from "@heroui/react";
 import { useInViewport } from "@mantine/hooks";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Movie, TV } from "tmdb-ts/dist/types";
 import MoviePosterCard from "../Movie/Cards/Poster";
 import { parseAsString, useQueryState } from "nuqs";
@@ -42,7 +41,6 @@ const SearchList = () => {
 
   const {
     data: movieData,
-    isFetching: isFetchingMovies,
     isPending: isPendingMovies,
     fetchNextPage: fetchNextMovies,
     isFetchingNextPage: isFetchingNextMovies,
@@ -58,7 +56,6 @@ const SearchList = () => {
 
   const {
     data: tvData,
-    isFetching: isFetchingTV,
     isPending: isPendingTV,
     fetchNextPage: fetchNextTV,
     isFetchingNextPage: isFetchingNextTV,
@@ -74,7 +71,6 @@ const SearchList = () => {
 
   const {
     data: animeData,
-    isFetching: isFetchingAnime,
     isPending: isPendingAnime,
     fetchNextPage: fetchNextAnime,
     isFetchingNextPage: isFetchingNextAnime,
@@ -95,15 +91,6 @@ const SearchList = () => {
       if (activeType === "anime" || activeType === "all") fetchNextAnime();
     }
   }, [activeType, fetchNextAnime, fetchNextMovies, fetchNextTV, inViewport]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      queryClient.removeQueries({ queryKey: ["search-movies"] });
-      queryClient.removeQueries({ queryKey: ["search-tv"] });
-      queryClient.removeQueries({ queryKey: ["search-anime"] });
-    };
-  }, []);
 
   const totalMovies = movieData?.pages[0]?.total_results ?? 0;
   const totalTV = tvData?.pages[0]?.total_results ?? 0;

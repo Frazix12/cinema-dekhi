@@ -13,7 +13,7 @@ const ContentTypeSelection: React.FC<ContentTypeSelectionProps> = ({ onTypeChang
   const { content, setContent, resetFilters } = useDiscoverFilters();
 
   const handleTabChange = (key: ContentType) => {
-    resetFilters();
+    resetFilters(key);
     setContent(key);
     onTypeChange?.(key);
   };

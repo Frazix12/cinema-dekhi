@@ -15,6 +15,42 @@ import {
 import { TbFolder, TbFolderFilled, TbApi } from "react-icons/tb";
 import { FaServer as Server } from "react-icons/fa";
 import { jikan } from "@/api/jikan";
+import { filterPagedFeedResults } from "@/utils/movies";
+import { TV } from "tmdb-ts/dist/types";
+
+const withAnimeFilteredResults = async <T extends { results: any[] }>(
+  query: () => Promise<T>,
+): Promise<T> => {
+  const response = await query();
+  return filterPagedFeedResults(response);
+};
+
+const withAnimeFilteredTvResults = async <T extends { results: any[] }>(
+  query: () => Promise<T>,
+): Promise<T & { results: TV[] }> => {
+  const response = filterPagedFeedResults(await query());
+
+  return {
+    ...response,
+    results: response.results.map((tv) => ({ adult: false, ...tv })) as TV[],
+  };
+};
+
+const mapJikanListResponse = <T extends unknown>(res: {
+  pagination: {
+    current_page: number;
+    last_visible_page: number;
+    items: { total: number };
+  };
+  data: T[];
+}) => {
+  return {
+    page: res.pagination.current_page,
+    results: res.data,
+    total_pages: res.pagination.last_visible_page,
+    total_results: res.pagination.items.total,
+  };
+};
 
 export const siteConfig: SiteConfigType = {
   name: "Cinema Dekhi",
@@ -70,91 +106,99 @@ export const siteConfig: SiteConfigType = {
     movies: [
       {
         name: "Today's Trending Movies",
-        query: () => tmdb.trending.trending("movie", "day"),
+        query: () => withAnimeFilteredResults(() => tmdb.trending.trending("movie", "day")),
         param: "todayTrending",
       },
       {
         name: "This Week's Trending Movies",
-        query: () => tmdb.trending.trending("movie", "week"),
+        query: () => withAnimeFilteredResults(() => tmdb.trending.trending("movie", "week")),
         param: "thisWeekTrending",
       },
       {
         name: "Popular Movies",
-        query: () => tmdb.movies.popular(),
+        query: () => withAnimeFilteredResults(() => tmdb.movies.popular()),
         param: "popular",
       },
       {
         name: "Now Playing Movies",
-        query: () => tmdb.movies.nowPlaying(),
+        query: () => withAnimeFilteredResults(() => tmdb.movies.nowPlaying()),
         param: "nowPlaying",
       },
       {
         name: "Upcoming Movies",
-        query: () => tmdb.movies.upcoming(),
+        query: () => withAnimeFilteredResults(() => tmdb.movies.upcoming()),
         param: "upcoming",
       },
       {
         name: "Top Rated Movies",
-        query: () => tmdb.movies.topRated(),
+        query: () => withAnimeFilteredResults(() => tmdb.movies.topRated()),
         param: "topRated",
       },
     ],
     tvShows: [
       {
         name: "Today's Trending TV Shows",
-        query: () => tmdb.trending.trending("tv", "day"),
+        query: () => withAnimeFilteredResults(() => tmdb.trending.trending("tv", "day")),
         param: "todayTrending",
       },
       {
         name: "This Week's Trending TV Shows",
-        query: () => tmdb.trending.trending("tv", "week"),
+        query: () => withAnimeFilteredResults(() => tmdb.trending.trending("tv", "week")),
         param: "thisWeekTrending",
       },
       {
         name: "Popular TV Shows",
-        // @ts-expect-error: Property 'adult' is missing in type 'PopularTvShowResult' but required in type 'TV'.
-        query: () => tmdb.tvShows.popular(),
+        query: () => withAnimeFilteredTvResults(() => tmdb.tvShows.popular()),
         param: "popular",
       },
       {
         name: "On The Air TV Shows",
-        // @ts-expect-error: Property 'adult' is missing in type 'OnTheAirResult' but required in type 'TV'.
-        query: () => tmdb.tvShows.onTheAir(),
+        query: () => withAnimeFilteredTvResults(() => tmdb.tvShows.onTheAir()),
         param: "onTheAir",
       },
       {
         name: "Top Rated TV Shows",
-        // @ts-expect-error: Property 'adult' is missing in type 'TopRatedTvShowResult' but required in type 'TV'.
-        query: () => tmdb.tvShows.topRated(),
+        query: () => withAnimeFilteredTvResults(() => tmdb.tvShows.topRated()),
         param: "topRated",
       },
     ],
     anime: [
       {
         name: "Top Anime",
-        query: async () => {
-          const res = await jikan.topAnime();
-          return {
-            page: res.pagination.current_page,
-            results: res.data,
-            total_pages: res.pagination.last_visible_page,
-            total_results: res.pagination.items.total,
-          };
-        },
+        query: async () => mapJikanListResponse(await jikan.topAnime()),
         param: "topAnime",
       },
       {
+        name: "This Season Anime",
+        query: async () => mapJikanListResponse(await jikan.currentSeasonAnime()),
+        param: "discover",
+      },
+      {
+        name: "Most Popular Anime",
+        query: async () => mapJikanListResponse(await jikan.topAnime(1, "tv", "bypopularity")),
+        param: "discover",
+      },
+      {
+        name: "TV Anime Series",
+        query: async () =>
+          mapJikanListResponse(await jikan.discoverAnime(1, "", "tv", "", "score")),
+        param: "tv",
+      },
+      {
+        name: "Anime Movies",
+        query: async () =>
+          mapJikanListResponse(await jikan.discoverAnime(1, "", "movie", "", "score")),
+        param: "movie",
+      },
+      {
+        name: "OVA Highlights",
+        query: async () =>
+          mapJikanListResponse(await jikan.discoverAnime(1, "", "ova", "", "score")),
+        param: "ova",
+      },
+      {
         name: "Upcoming Anime",
-        query: async () => {
-          // Using search with upcoming status as a proxy for upcoming Anime
-          const res = await fetch("https://api.jikan.moe/v4/seasons/upcoming").then(r => r.json());
-          return {
-            page: res.pagination.current_page,
-            results: res.data,
-            total_pages: res.pagination.last_visible_page,
-            total_results: res.pagination.items.total,
-          };
-        },
+        query: async () => mapJikanListResponse(await jikan.upcomingAnime()),
         param: "upcomingAnime",
       },
     ],

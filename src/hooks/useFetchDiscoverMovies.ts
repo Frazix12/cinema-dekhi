@@ -2,6 +2,7 @@
 
 import { tmdb } from "@/api/tmdb";
 import { DiscoverMoviesFetchQueryType } from "@/types/movie";
+import { filterPagedFeedResults } from "@/utils/movies";
 import { MovieDiscoverResult } from "tmdb-ts/dist/types/discover";
 
 interface FetchDiscoverMovies {
@@ -13,7 +14,7 @@ interface FetchDiscoverMovies {
   runtimeMax?: number;
 }
 
-const useFetchDiscoverMovies = ({
+const fetchDiscoverMovies = ({
   page = 1,
   type = "discover",
   genres,
@@ -21,13 +22,14 @@ const useFetchDiscoverMovies = ({
   runtimeMin,
   runtimeMax,
 }: FetchDiscoverMovies): Promise<MovieDiscoverResult> => {
-  const discover = () => tmdb.discover.movie({
-    page: page,
-    with_genres: genres,
-    sort_by: sortBy as any,
-    'with_runtime.gte': runtimeMin,
-    'with_runtime.lte': runtimeMax
-  });
+  const discover = () =>
+    tmdb.discover.movie({
+      page: page,
+      with_genres: genres,
+      sort_by: sortBy as any,
+      "with_runtime.gte": runtimeMin,
+      "with_runtime.lte": runtimeMax,
+    });
   const todayTrending = () => tmdb.trending.trending("movie", "day", { page: page });
   const thisWeekTrending = () => tmdb.trending.trending("movie", "week", { page: page });
   const popular = () => tmdb.movies.popular({ page: page });
@@ -45,7 +47,7 @@ const useFetchDiscoverMovies = ({
     topRated,
   }[type];
 
-  return queryData();
+  return queryData().then((response) => filterPagedFeedResults(response));
 };
 
-export default useFetchDiscoverMovies;
+export default fetchDiscoverMovies;

@@ -5,7 +5,7 @@ import { Spinner } from "@heroui/react";
 import { useInViewport } from "@mantine/hooks";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { memo, useEffect } from "react";
-import { jikan, PaginationInfo } from "@/api/jikan";
+import { jikan, JikanAnimeSummary, PaginationInfo } from "@/api/jikan";
 import AnimePosterCard from "./Cards/Poster";
 import Loop from "@/components/ui/other/Loop";
 import PosterCardSkeleton from "@/components/ui/other/PosterCardSkeleton";
@@ -13,25 +13,25 @@ import { getLoadingLabel } from "@/utils/movies";
 import { notFound } from "next/navigation";
 import useDiscoverFilters from "@/hooks/useDiscoverFilters";
 
-// Minimal interface for Anime data needed in list
-export interface AnimeData {
-  mal_id: number;
-  title: string;
-  images: {
-    jpg: {
-      image_url: string;
-      large_image_url: string;
-    };
-  };
-  score: number;
-  year: number;
-  rating: string;
-}
+export type AnimeData = JikanAnimeSummary;
 
 interface AnimeResponse {
   data: AnimeData[];
   pagination: PaginationInfo;
 }
+
+const normalizeAnimeOrderBy = (sortBy: string): string => {
+  const mapped =
+    sortBy === "popularity.desc"
+      ? "popularity"
+      : sortBy === "vote_average.desc"
+        ? "score"
+        : sortBy === "primary_release_date.desc"
+          ? "start_date"
+          : sortBy;
+
+  return ["popularity", "score", "episodes", "start_date"].includes(mapped) ? mapped : "popularity";
+};
 
 const AnimeList = () => {
   const { ref, inViewport } = useInViewport();
@@ -44,17 +44,22 @@ const AnimeList = () => {
         if (queryType === "topAnime" && !genresString) {
           return jikan.topAnime(pageParam as number);
         }
+
         if (queryType === "upcomingAnime" && !genresString) {
-          return jikan.discoverAnime(pageParam as number, "", "", "upcoming");
+          return jikan.upcomingAnime(pageParam as number);
         }
 
-        // Discover endpoint is more robust for genres and raw types
+        const animeType = ["tv", "movie", "ova"].includes(queryType as string) ? queryType : "";
+        const animeStatus = queryType === "upcomingAnime" ? "upcoming" : "";
+        const animeOrderBy =
+          queryType === "topAnime" ? "score" : normalizeAnimeOrderBy(sortBy || "popularity");
+
         return jikan.discoverAnime(
           pageParam as number,
           genresString,
-          ["tv", "movie", "ova"].includes(queryType as string) ? queryType : "",
-          "",
-          sortBy
+          animeType,
+          animeStatus,
+          animeOrderBy,
         );
       },
       initialPageParam: 1,
@@ -87,7 +92,13 @@ const AnimeList = () => {
       <div className="movie-grid">
         {data.pages.map((page, pageIndex) => {
           return page.data.map((anime, animeIndex) => {
-            return <AnimePosterCard key={`${anime.mal_id}-${pageIndex}-${animeIndex}`} anime={anime} variant="bordered" />;
+            return (
+              <AnimePosterCard
+                key={`${anime.mal_id}-${pageIndex}-${animeIndex}`}
+                anime={anime}
+                variant="bordered"
+              />
+            );
           });
         })}
       </div>

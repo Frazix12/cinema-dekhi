@@ -143,6 +143,34 @@ export const mutateTvShowTitle = (tv?: TvShowDetails | TV, language: string = "i
   return tv.original_language === language ? tv.original_name : tv.name;
 };
 
+type TmdbFeedItem = {
+  genre_ids?: number[];
+  original_language?: string;
+  origin_country?: string[];
+};
+
+export const isLikelyAnime = (item?: TmdbFeedItem): boolean => {
+  if (!item) return false;
+
+  const hasAnimationGenre = item.genre_ids?.includes(16) ?? false;
+  const isJapanese = item.original_language === "ja" || item.origin_country?.includes("JP");
+
+  return hasAnimationGenre && Boolean(isJapanese);
+};
+
+export const filterOutAnimeFromFeed = <T extends TmdbFeedItem>(items: T[] = []): T[] => {
+  return items.filter((item) => !isLikelyAnime(item));
+};
+
+export const filterPagedFeedResults = <T extends TmdbFeedItem, R extends { results: T[] }>(
+  payload: R,
+): R => {
+  return {
+    ...payload,
+    results: filterOutAnimeFromFeed(payload.results),
+  };
+};
+
 /**
  * Returns a random label for a fun loading animation.
  *

@@ -28,31 +28,29 @@ const AnimePlayerHeader: React.FC<AnimePlayerHeaderProps> = ({
       className={cn(
         "absolute top-0 z-40 flex h-28 w-full items-start justify-between gap-4",
         "bg-linear-to-b from-black/80 to-transparent p-2 text-white transition-opacity md:p-4",
-        { "opacity-0": hidden }
+        { "opacity-0": hidden },
       )}
     >
       <ActionButton label="Back" href={`/anime/${id}`}>
         <ArrowLeft size={42} />
       </ActionButton>
-      <div className="absolute left-1/2 hidden -translate-x-1/2 flex-col justify-center text-center sm:flex gap-2">
+      <div className="absolute left-1/2 hidden -translate-x-1/2 flex-col justify-center gap-2 text-center sm:flex">
         <p className="text-sm text-white text-shadow-lg sm:text-lg lg:text-xl">
-          {animeName} - <span className="opacity-80 text-base">Episode {episode}</span>
+          {animeName} - <span className="text-base opacity-80">Episode {episode}</span>
         </p>
-        <div className="flex justify-center">
-          <Tabs
-            size="sm"
-            color="primary"
-            variant="solid"
-            selectedKey={type}
-            onSelectionChange={(key) => onTypeChange(key as "sub" | "dub")}
-            classNames={{ tabList: "bg-white/10 backdrop-blur-md" }}
-          >
-            <Tab key="sub" title="Subtitled" />
-            <Tab key="dub" title="Dubbed" />
-          </Tabs>
-        </div>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
+        <Tabs
+          size="sm"
+          color="primary"
+          variant="solid"
+          selectedKey={type}
+          onSelectionChange={(key) => onTypeChange(key as "sub" | "dub")}
+          classNames={{ tabList: "bg-white/10 backdrop-blur-md" }}
+        >
+          <Tab key="sub" title="Sub" />
+          <Tab key="dub" title="Dub" />
+        </Tabs>
         <ActionButton label="Sources" tooltip="Servers" onClick={onOpenSource}>
           <Server size={34} />
         </ActionButton>

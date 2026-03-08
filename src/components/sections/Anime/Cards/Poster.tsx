@@ -17,8 +17,9 @@ const AnimePosterCard: React.FC<AnimePosterCardProps> = ({ anime, variant = "ful
   const posterImage = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url;
   const title = anime.title || "Unknown Title";
   const rating = anime.rating || "";
+  const formattedMembers = anime.members ? new Intl.NumberFormat().format(anime.members) : "N/A";
+  const episodesLabel = anime.episodes ? `${anime.episodes} eps` : "Unknown eps";
 
-  // Show mature label if the rating indicates it
   const isAdult = rating.includes("R+") || rating.includes("Rx");
 
   return (
@@ -34,21 +35,28 @@ const AnimePosterCard: React.FC<AnimePosterCardProps> = ({ anime, variant = "ful
             />
           )}
           {isAdult && (
-            <Chip
-              color="danger"
-              size="sm"
-              variant="flat"
-              className="absolute left-2 top-2 z-20"
-            >
+            <Chip color="danger" size="sm" variant="flat" className="absolute top-2 left-2 z-20">
               18+
             </Chip>
           )}
           <div className="absolute bottom-0 z-2 h-1/2 w-full bg-linear-to-t from-black from-1%"></div>
           <div className="absolute bottom-0 z-3 flex w-full flex-col gap-1 px-4 py-3">
             <h6 className="truncate text-sm font-semibold">{title}</h6>
+            <div className="flex flex-wrap items-center gap-1 text-[11px] text-white/85">
+              <Chip size="sm" variant="flat" className="bg-black/40 text-white">
+                {anime.type || "Anime"}
+              </Chip>
+              {anime.status && (
+                <Chip size="sm" variant="flat" className="bg-black/40 text-white">
+                  {anime.status}
+                </Chip>
+              )}
+            </div>
             <div className="flex justify-between text-xs">
-              <p>{releaseYear}</p>
-              <Rating rate={anime.score} />
+              <p>
+                {releaseYear} • {episodesLabel}
+              </p>
+              <Rating rate={anime.score || 0} />
             </div>
           </div>
           <Image
@@ -64,12 +72,7 @@ const AnimePosterCard: React.FC<AnimePosterCardProps> = ({ anime, variant = "ful
       )}
 
       {variant === "bordered" && (
-        <Card
-          isHoverable
-          fullWidth
-          shadow="md"
-          className="group h-full bg-secondary-background"
-        >
+        <Card isHoverable fullWidth shadow="md" className="group bg-secondary-background h-full">
           <CardHeader className="flex items-center justify-center pb-0">
             <div className="relative size-full">
               {hovered && (
@@ -85,12 +88,12 @@ const AnimePosterCard: React.FC<AnimePosterCardProps> = ({ anime, variant = "ful
                   color="danger"
                   size="sm"
                   variant="shadow"
-                  className="absolute left-2 top-2 z-20"
+                  className="absolute top-2 left-2 z-20"
                 >
                   18+
                 </Chip>
               )}
-              <div className="relative overflow-hidden rounded-large">
+              <div className="rounded-large relative overflow-hidden">
                 <Image
                   isBlurred
                   alt={title}
@@ -102,10 +105,15 @@ const AnimePosterCard: React.FC<AnimePosterCardProps> = ({ anime, variant = "ful
           </CardHeader>
           <CardBody className="justify-end pb-1">
             <p className="text-md truncate font-bold">{title}</p>
+            <p className="text-foreground-500 text-xs">
+              {anime.type || "Anime"} • {episodesLabel}
+            </p>
           </CardBody>
           <CardFooter className="justify-between pt-0 text-xs">
-            <p>{releaseYear}</p>
-            <Rating rate={anime.score} />
+            <p>
+              {releaseYear} • {formattedMembers} members
+            </p>
+            <Rating rate={anime.score || 0} />
           </CardFooter>
         </Card>
       )}

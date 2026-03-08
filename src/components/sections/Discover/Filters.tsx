@@ -1,13 +1,34 @@
 import GenresSelect from "@/components/ui/input/GenresSelect";
 import ContentTypeSelection from "@/components/ui/other/ContentTypeSelection";
 import useDiscoverFilters from "@/hooks/useDiscoverFilters";
-import { DiscoverMoviesFetchQueryType } from "@/types/movie";
+import {
+  DiscoverAnimeFetchQueryType,
+  DiscoverMoviesFetchQueryType,
+  DiscoverTvShowsFetchQueryType,
+} from "@/types/movie";
 import { Select, SelectItem, Button, Slider } from "@heroui/react";
 
+type DiscoverQueryType =
+  | DiscoverMoviesFetchQueryType
+  | DiscoverTvShowsFetchQueryType
+  | DiscoverAnimeFetchQueryType;
+
 const DiscoverFilters = () => {
-  const { types, content, genres, queryType, sortBy, runtimeMin, runtimeMax,
-    setQueryType, setGenres, setSortBy, setRuntimeMin, setRuntimeMax, resetFilters } =
-    useDiscoverFilters();
+  const {
+    types,
+    content,
+    genres,
+    queryType,
+    sortBy,
+    runtimeMin,
+    runtimeMax,
+    setQueryType,
+    setGenres,
+    setSortBy,
+    setRuntimeMin,
+    setRuntimeMax,
+    resetFilters,
+  } = useDiscoverFilters();
 
   return (
     <div className="flex w-full flex-wrap justify-center gap-3">
@@ -22,7 +43,7 @@ const DiscoverFilters = () => {
           className="max-w-xs"
           selectedKeys={[queryType]}
           onChange={({ target }) => {
-            setQueryType(target.value as DiscoverMoviesFetchQueryType);
+            setQueryType(target.value as DiscoverQueryType);
             setGenres(null);
           }}
           value={queryType}
@@ -91,7 +112,7 @@ const DiscoverFilters = () => {
         </div>
       )}
 
-      <Button size="sm" onPress={resetFilters}>
+      <Button size="sm" onPress={() => resetFilters()}>
         Reset Filters
       </Button>
     </div>

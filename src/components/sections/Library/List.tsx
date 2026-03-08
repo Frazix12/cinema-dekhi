@@ -59,7 +59,7 @@ const LibraryList = () => {
     if (inViewport && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [inViewport]);
+  }, [fetchNextPage, hasNextPage, inViewport, isFetchingNextPage]);
 
   const clearWatchlistMutation = useMutation({
     mutationFn: async (type: "movie" | "tv" | "anime") => {
@@ -158,7 +158,8 @@ const LibraryList = () => {
               }}
               isLoading={clearWatchlistMutation.isPending || isPending}
             >
-              Clear {content === "movie" ? "Movies" : content === "tv" ? "TV Shows" : "Anime"} from Watchlist
+              Clear {content === "movie" ? "Movies" : content === "tv" ? "TV Shows" : "Anime"} from
+              Watchlist
             </Button>
           )}
         </div>
@@ -178,13 +179,17 @@ const LibraryList = () => {
                     <Suspense key={`anime-${data.id}`}>
                       <AnimePosterCard
                         variant="bordered"
-                        anime={{
-                          mal_id: data.id,
-                          title: data.title,
-                          images: { jpg: { large_image_url: data.poster_path || "" } },
-                          score: data.vote_average,
-                          year: data.release_date ? parseInt(data.release_date.split("-")[0]) : null,
-                        } as any}
+                        anime={
+                          {
+                            mal_id: data.id,
+                            title: data.title,
+                            images: { jpg: { large_image_url: data.poster_path || "" } },
+                            score: data.vote_average,
+                            year: data.release_date
+                              ? parseInt(data.release_date.split("-")[0])
+                              : null,
+                          } as any
+                        }
                       />
                     </Suspense>
                   );
@@ -246,7 +251,8 @@ const LibraryList = () => {
         ) : (
           <div className="flex h-[30vh] items-center justify-center">
             <p className="text-default-500">
-              No {content === "movie" ? "movies" : content === "tv" ? "TV shows" : "anime"} in your watchlist yet.
+              No {content === "movie" ? "movies" : content === "tv" ? "TV shows" : "anime"} in your
+              watchlist yet.
             </p>
           </div>
         )}
@@ -263,8 +269,9 @@ const LibraryList = () => {
         isLoading={clearWatchlistMutation.isPending}
       >
         <p>
-          Are you sure you want to remove all {content === "movie" ? "movies" : content === "tv" ? "TV shows" : "anime"} from
-          your watchlist? This action cannot be undone.
+          Are you sure you want to remove all{" "}
+          {content === "movie" ? "movies" : content === "tv" ? "TV shows" : "anime"} from your
+          watchlist? This action cannot be undone.
         </p>
         <p className="text-default-500 text-sm">
           {sortedWatchlist.length} {sortedWatchlist.length === 1 ? "item" : "items"} will be

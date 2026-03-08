@@ -41,12 +41,14 @@ export const getSearchSuggestions = async (
       type: "tv",
     }));
     const animeSuggestions: SearchSuggestion[] = anime.data
-      .map((item: { mal_id: number; title: string; title_english?: string | null }) => ({
-        id: item.mal_id,
-        title: item.title_english || item.title,
-        type: "anime",
-      }))
-      .filter((item: SearchSuggestion) => Number.isFinite(item.id) && !isEmpty(item.title));
+      .map(
+        (item): SearchSuggestion => ({
+          id: item.mal_id,
+          title: item.title_english || item.title,
+          type: "anime",
+        }),
+      )
+      .filter((item) => Number.isFinite(item.id) && !isEmpty(item.title));
 
     const suggestions = [...movieSuggestions, ...tvSuggestions, ...animeSuggestions];
 
